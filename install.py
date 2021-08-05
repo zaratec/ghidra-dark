@@ -19,8 +19,8 @@ args = parser.parse_args()
 if os.name == "nt":
     find_ghidra = "WMIC path win32_process get Commandline"
     launch_sh = "launch.bat"
-    install_dir = ";%INSTALL_DIR%"
-    cpath = "set CPATH="
+    install_dir = ";%INSTALL_DIR%\\"
+    cpath = 'set (")?CPATH='
 else:
     find_ghidra = "ps -ax"
     launch_sh = "launch.sh"
@@ -70,9 +70,13 @@ launch_properties_path = os.path.join(install_path, "support", "launch.propertie
 # Add FlatLaf to the list of jar files
 with fileinput.FileInput(launch_sh_path, inplace=True, backup=".bak") as fp:
     for line in fp:
-        if line.strip().startswith(cpath) and "flatlaf" not in line:
+        if re.match(cpath, line) != None and "flatlaf" not in line:
             if os.name == "nt":
-                print(f"{line.rstrip()}{install_dir}flatlaf-0.43.jar")
+                if line.rstrip()[-1] == "\"":
+                    print(f"{line.rstrip()[:-1]}{install_dir}flatlaf-0.43.jar\"")
+                else:
+                    # Compatible for pre-10.0 use
+                    print(f"{line.rstrip()}{install_dir}flatlaf-0.43.jar")
             else:
                 print(f"{line.rstrip()[:-1]}{install_dir}flatlaf-0.43.jar\"")
         else:
