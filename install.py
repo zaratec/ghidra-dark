@@ -70,7 +70,7 @@ launch_properties_path = os.path.join(install_path, "support", "launch.propertie
 # Add FlatLaf to the list of jar files
 with fileinput.FileInput(launch_sh_path, inplace=True, backup=".bak") as fp:
     for line in fp:
-        if re.match(cpath, line) != None and "flatlaf" not in line:
+        if re.search(cpath, line) != None and "flatlaf" not in line:
             if os.name == "nt":
                 if line.rstrip()[-1] == "\"":
                     print(f"{line.rstrip()[:-1]}{install_dir}flatlaf-0.43.jar\"")
